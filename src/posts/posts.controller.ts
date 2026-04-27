@@ -102,6 +102,7 @@ export class PostsController {
                 0,
             )
             const commentsCount = post.comments.length
+            // 36_000_00 = 1 hora en milisegundos.
             const hoursSinceCreated =
                 (Date.now() - new Date(post.createdAt).getTime()) / 36_000_00
             const relevanceScore =
@@ -138,6 +139,8 @@ export class PostsController {
 
         let sorted = [...mappedPosts]
 
+        // Ranking inline por modo
+        // Esto define la forma de ordenar en base al filtro
         switch (mode) {
             case "latest":
                 sorted = sorted.sort(
@@ -220,6 +223,7 @@ export class PostsController {
             throw new BadRequestException("Comment too short")
         }
 
+        // Cliente legacy: devuelve tipos mixtos (string/number/object).
         const moderation = legacyModerationApi.review(body.content)
 
         let blocked = false
@@ -238,6 +242,7 @@ export class PostsController {
             throw new BadRequestException("Comment blocked by moderation")
         }
 
+        // Se persiste la información en la base de datos
         const created = await this.prisma.comment.create({
             data: {
                 postId: id,
