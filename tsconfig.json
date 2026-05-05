@@ -1,24 +1,36 @@
-{
-    "compilerOptions": {
-        "module": "commonjs",
-        "paths": {
-            "@/*": ["./src/*"]
-        },
-        "declaration": true,
-        "removeComments": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "allowSyntheticDefaultImports": true,
-        "target": "ES2023",
-        "types": ["node", "jest"],
-        "sourceMap": true,
-        "outDir": "./dist",
-        "incremental": true,
-        "skipLibCheck": true,
-        "strictNullChecks": true,
-        "forceConsistentCasingInFileNames": true,
-        "noImplicitAny": false,
-        "strictBindCallApply": false,
-        "noFallthroughCasesInSwitch": false
+export interface ModerationResult {
+    approved: boolean
+    reason?: string
+}
+
+export class ModerationAdapter {
+    adapt(raw: string | number | object | null): ModerationResult {
+        if (raw === "BLOCK") {
+            return { approved: false, reason: "legacy-block" }
+        }
+
+        if (raw === "OK") {
+            return { approved: true }
+        }
+
+        if (typeof raw === "number") {
+            return { approved: raw >= 1 }
+        }
+
+        if (typeof raw === "object" && raw !== null) {
+            const obj = raw as Record<string, unknown>
+
+            const pass = obj.pass
+            const reason = obj.reason
+
+            return {
+                approved: pass === true,
+                reason: typeof reason === "string" ? reason : undefined
+            }
+        }
+
+        return { approved: true }
     }
 }
+
+#para subirlooo siisisis 
